@@ -16,7 +16,7 @@
     trackCount:$("trackCount"), updatedAt:$("updatedAt")
   };
   const demo = [{id:"demo",titulo:"Una canción para ti",artista:"Artista invitado",portada:CONFIG.DEMO_COVER,video:"",youtube_url:"",activa:"SI",orden:"1"}];
-  let tracks = [...demo], current = 0, playing = false, loadedFromSheet = false;
+  let tracks = [...demo], current = 0, playing = false, loadedFromSheet = false, immersiveTimer = 0;
   const accents = ["#b88cff","#ff7aa8","#5adbd0","#ffb86b","#7ca7ff","#f5e76e"];
   function csvRows(text) {
     const rows=[]; let row=[], cell="", quoted=false;
@@ -81,6 +81,19 @@
     const absoluteCover = normalizeMediaUrl(s,"image");
     document.documentElement.style.setProperty("--cover-image", 'url("' + absoluteCover + '")');
   }
+  function exitImmersive(shouldReturnToVinyl=false){
+    window.clearTimeout(immersiveTimer);
+    immersiveTimer=0;
+    document.body.classList.remove("immersive-video");
+    if(shouldReturnToVinyl){
+      const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      els.stage.scrollIntoView({behavior:reduced?"auto":"smooth",block:"center"});
+    }
+  }
+  function enterImmersive(){
+    if(!playing)return;
+    document.body.classList.add("immersive-video");
+  }
   function stopVideo(){
     const video=els.videoFrame.querySelector("video");
     if(video){try{video.pause();video.removeAttribute("src");video.load();}catch{}}
@@ -110,10 +123,11 @@
     if(ytId){
       const iframe=document.createElement("iframe");
       iframe.title="Video de "+(t.titulo||"la canción");
-      iframe.src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(ytId)+"?autoplay=1&rel=0&playsinline=1";
+      iframe.src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(ytId)+"?autoplay=1&rel=0&playsinline=1&enablejsapi=1";
       iframe.allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
       iframe.allowFullscreen=true;iframe.referrerPolicy="strict-origin-when-cross-origin";
       els.videoFrame.replaceChildren(iframe);
+      immersiveTimer=window.setTimeout(enterImmersive,3000);
       els.status.textContent="Video de YouTube cargado.";
       return;
     }
@@ -137,8 +151,10 @@
     video.playsInline=true;
     video.preload="metadata";
     video.setAttribute("playsinline","");
-    video.addEventListener("error",()=>{els.status.textContent="No se pudo reproducir el enlace. Para evitar bloqueos, usa un MP4 directo o sube el archivo a la carpeta videos/ del repositorio.";});
+    video.addEventListener("error",()=>{exitImmersive(false);els.status.textContent="No se pudo reproducir el enlace. Para evitar bloqueos, usa un MP4 directo o sube el archivo a la carpeta videos/ del repositorio.";});
+    video.addEventListener("ended",()=>{exitImmersive(true);playing=false;els.stage.classList.remove("is-playing");els.videoCard.classList.remove("is-playing");document.body.classList.remove("is-playing");els.playIcon.textContent="▶";els.playText.textContent="Reproducir experiencia";stopVideo();els.status.textContent="Video terminado. De vuelta al vinilo.";});
     els.videoFrame.replaceChildren(video);
+    immersiveTimer=window.setTimeout(enterImmersive,3000);
     const promise=video.play();
     if(promise&&typeof promise.catch==="function")promise.catch(()=>{els.status.textContent="El video está cargado; toca ▶ dentro del reproductor para escuchar.";});
     else els.status.textContent="Video cargado.";
@@ -151,7 +167,7 @@
     els.playIcon.textContent=playing?"Ⅱ":"▶";
     els.playText.textContent=playing?"Pausar experiencia":"Reproducir experiencia";
     if(playing)showVideo(tracks[current]);else stopVideo();
-    if(!playing)els.status.textContent="Reproducción pausada.";
+    if(!playing){exitImmersive(false);els.status.textContent="Reproducción pausada.";}
   }
   function buildPlaylist(){
     els.playlist.replaceChildren();
