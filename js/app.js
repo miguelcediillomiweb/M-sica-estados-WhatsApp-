@@ -161,16 +161,6 @@
     video.playsInline=true;
     video.preload="metadata";
     video.setAttribute("playsinline","");
-    let minimizedBeforeEnd=false;
-    video.addEventListener("timeupdate",()=>{
-      if(!minimizedBeforeEnd && Number.isFinite(video.duration) && video.duration>3 && video.duration-video.currentTime<=2){
-        minimizedBeforeEnd=true;
-        if(document.body.classList.contains("immersive-video")){
-          exitImmersive(true);
-          els.status.textContent="♪ La canción está por terminar…";
-        }
-      }
-    });
     video.addEventListener("error",()=>{exitImmersive(false);els.status.textContent="No se pudo reproducir el enlace. Para evitar bloqueos, usa un MP4 directo o sube el archivo a la carpeta videos/ del repositorio.";});
     video.addEventListener("ended",()=>{exitImmersive(true);playing=false;els.stage.classList.remove("is-playing");els.videoCard.classList.remove("is-playing");document.body.classList.remove("is-playing");els.playIcon.textContent="▶";els.playText.textContent="Reproducir experiencia";stopVideo();els.status.textContent="Video terminado. De vuelta al vinilo.";});
     els.videoFrame.replaceChildren(video);
