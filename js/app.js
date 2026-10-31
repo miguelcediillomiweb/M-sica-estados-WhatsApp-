@@ -5,7 +5,9 @@
     // Si la pestaña principal no usa gid=0, cambia ese número por el gid de la pestaña correcta.
     SHEET_CSV_URL: "https://docs.google.com/spreadsheets/d/1eMXgoVm_JjMmzh6xPGFYDVmIyujttinF3bCrQWg29c0/export?format=csv&gid=0",
     REFRESH_MS: 60000,
-    DEMO_COVER: "img/canciones/portada-demo.svg"
+    DEMO_COVER: "img/canciones/portada-demo.svg",
+    // Cambia únicamente este emoji para adaptar el encabezado al ánimo o la temporada.
+    HEADER_EMOJI: "🎃"
   };
   const $ = id => document.getElementById(id);
   const els = {
