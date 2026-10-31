@@ -1,27 +1,40 @@
 # Música Vinilo
 
-Experiencia web responsive con portada, vinilo giratorio, fondo líquido y reproductor de video de YouTube. Los archivos se mantienen separados por función.
+Experiencia web responsive con portada, vinilo giratorio, fondo líquido y reproductor de videos cortos alojados en el propio repositorio.
 
 ## Estructura
 - `index.html`: estructura de la página.
 - `css/styles.css`: diseño y animaciones.
-- `js/app.js`: lógica del reproductor y lectura de Google Sheets.
-- `img/canciones/`: portadas de canciones.
-- `datos/Musica.csv`: ejemplo de columnas para el catálogo.
+- `js/app.js`: reproductor y lectura de Google Sheets.
+- `img/canciones/`: portadas.
+- `videos/`: archivos MP4 de las canciones/estados.
+- `datos/Musica.csv`: plantilla de columnas.
 
-## Conectar la hoja de Google
-La aplicación usa la hoja que compartiste, con ID `1eMXgoVm_JjMmzh6xPGFYDVmIyujttinF3bCrQWg29c0`, e intenta leer la primera pestaña (gid=0) en formato CSV.
+## Columnas de Google Sheets
+Usa esta fila de encabezados: `id, titulo, artista, portada, video, youtube_url, activa, orden`.
 
-1. En Google Sheets, comprueba que la primera fila tenga exactamente estas columnas: `id, titulo, artista, portada, youtube_url, activa, orden`.
-2. En **Compartir**, permite que cualquier persona con el enlace pueda ver los datos, o usa **Archivo → Compartir → Publicar en la web** y publica la pestaña correcta como CSV. Si la pestaña tiene otro gid, actualiza `SHEET_CSV_URL` en `js/app.js`.
-3. No incluyas información privada: la hoja publicada o accesible por cualquiera se considera pública.
-4. En `portada`, usa rutas del repositorio, por ejemplo `img/canciones/mi-cancion.jpg`, o una URL pública de imagen. Sube la imagen a `img/canciones/` y escribe el mismo nombre/ruta en la hoja.
-5. En `youtube_url`, pega el enlace de YouTube. En `activa`, usa `SI` o `NO`. `orden` determina el orden en que aparecen las canciones.
+- `id`: identificador único.
+- `titulo`: nombre de la canción o estado.
+- `artista`: artista o descripción.
+- `portada`: ruta de la imagen, por ejemplo `img/canciones/cancion-001.jpg`.
+- `video`: ruta del archivo dentro del repositorio, por ejemplo `videos/cancion-001.mp4`. Esta es la opción recomendada.
+- `youtube_url`: respaldo opcional si no se usa un archivo local. YouTube todavía puede imponer restricciones.
+- `activa`: `SI` para mostrar y `NO` para ocultar.
+- `orden`: número de posición.
 
-La página actualiza el catálogo cada 60 segundos. Cuando una portada cambia en la hoja, la funda, la etiqueta central del vinilo y el fondo asociado se actualizan al volver a sincronizar.
+## Añadir videos
+1. Convierte o exporta el video a MP4 con video H.264 y audio AAC si tiene sonido.
+2. En GitHub, abre la carpeta `videos/` y sube el archivo, por ejemplo `cancion-001.mp4`.
+3. En la columna `video` de Google Sheets escribe exactamente `videos/cancion-001.mp4`.
+4. En `portada` escribe la ruta de la imagen. La funda, el centro del vinilo y el fondo líquido comparten esa portada.
+5. Deja `activa` en `SI`. La página sincroniza el catálogo cada 60 segundos.
 
-## Límites
-- La reproducción usa el reproductor incrustado oficial de YouTube; algunos videos pueden impedir la reproducción incrustada, mostrar anuncios o tener restricciones por región/cuenta.
-- El navegador puede bloquear reproducción automática hasta que la persona toque el botón.
-- Esta configuración de CSV requiere que la hoja permita lectura desde la web. Si no carga, revisa permisos, pestaña y gid.
-- La portada de demostración es un SVG de ejemplo; reemplázala por tus propias portadas.
+**Tamaño recomendado:** mantén cada clip lo más comprimido posible, idealmente unos pocos MB. GitHub limita archivos individuales a 100 MB y GitHub Pages no es un servicio de streaming; para muchos videos o archivos grandes conviene usar almacenamiento de video/CDN aparte. No subas material que no tengas derecho a publicar.
+
+## Conexión con Google Sheets
+La aplicación intenta leer el CSV de la primera pestaña (gid=0) de la hoja configurada en `js/app.js`. Para que funcione, la pestaña debe poder leerse desde la web o publicarse como CSV. Si no se carga, comprueba el permiso, el gid y los encabezados. No coloques información privada en una hoja pública.
+
+## Comportamiento
+- Los videos de la columna `video` se reproducen directamente en un elemento HTML `video`, sin depender de YouTube.
+- Si `video` está vacío y hay `youtube_url`, se usa YouTube como alternativa.
+- Los navegadores pueden bloquear el autoplay; la experiencia se inicia al tocar el botón.
