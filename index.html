@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090911">
+  <meta name="description" content="Escucha y descubre música para tus estados de WhatsApp.">
+  <title>Música Vinilo</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"><div class="ambient-glow"></div></div>
+  <header class="topbar"><span class="brand-mark">◉</span><span>MÚSICA <b>VINILO</b></span><span class="live-dot">EXPERIENCIA MUSICAL</span></header>
+  <main class="layout">
+    <section class="player-card" aria-label="Reproductor de música">
+      <div class="eyebrow">TU CANCIÓN · TU MOMENTO</div>
+      <div class="stage" id="stage">
+        <div class="sleeve-wrap" id="sleeveWrap">
+          <div class="sleeve" id="sleeve"><img id="coverArt" src="img/canciones/portada-demo.svg" alt="Portada del álbum"><div class="sleeve-shine"></div></div>
+        </div>
+        <div class="record-wrap" id="recordWrap" aria-hidden="true"><div class="record"><div class="grooves"></div><div class="record-label"><img id="recordArt" src="img/canciones/portada-demo.svg" alt=""><span class="label-hole"></span></div></div></div>
+      </div>
+      <div class="track-info"><p class="track-kicker">REPRODUCIENDO EN VINILO</p><h1 id="songTitle">Una canción para ti</h1><p id="songArtist">Artista invitado</p></div>
+      <div class="controls"><button id="playBtn" class="play-button" type="button"><span id="playIcon">▶</span><span id="playText">Reproducir experiencia</span></button><button id="nextBtn" class="icon-button" type="button" aria-label="Siguiente canción" title="Siguiente canción">↻</button></div>
+      <p class="hint" id="statusText">Pulsa reproducir para descubrir el video.</p>
+    </section>
+    <section class="video-card" id="videoCard" aria-label="Video musical">
+      <div class="video-heading"><span class="video-indicator"></span><span>AHORA EN PANTALLA</span></div>
+      <div class="video-frame" id="videoFrame"><div class="video-placeholder"><span>♪</span><p>El video aparecerá aquí</p><small>Presiona reproducir para comenzar</small></div></div>
+      <div class="video-caption"><span class="equalizer"><i></i><i></i><i></i><i></i></span><span id="videoCaption">Tu música, con estilo.</span></div>
+    </section>
+  </main>
+  <section class="playlist-section"><div class="section-title"><span>SELECCIÓN MUSICAL</span><small id="trackCount">Cargando canciones…</small></div><div id="playlist" class="playlist"><p class="empty-list">Preparando tu selección…</p></div></section>
+  <footer>Diseñado para disfrutar música con estilo · <span id="updatedAt">Modo demostración</span></footer>
+</body>
+</html>
