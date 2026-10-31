@@ -43,6 +43,8 @@
     const s=coverFor(track);let hash=0;for(let i=0;i<s.length;i++)hash=(hash*31+s.charCodeAt(i))|0;
     document.documentElement.style.setProperty("--accent",accents[Math.abs(hash)%accents.length]);
     document.documentElement.style.setProperty("--accent2",accents[(Math.abs(hash)+3)%accents.length]);
+    const absoluteCover = new URL(s, document.baseURI).href;
+    document.documentElement.style.setProperty("--cover-image", `url("${absoluteCover.replace(/["\\]/g, "\\document.documentElement.style.setProperty("--accent2",accents[(Math.abs(hash)+3)%accents.length]);")}")`);
   }
   function stopVideo(){
     const frame=els.videoFrame.querySelector("iframe");
