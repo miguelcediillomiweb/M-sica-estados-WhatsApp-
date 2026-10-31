@@ -48,10 +48,17 @@
   function normalizeMediaUrl(value, kind="image"){
     const raw=String(value||"").trim();
     if(!raw)return kind==="image"?new URL(CONFIG.DEMO_COVER,document.baseURI).href:"";
-    // Convierte enlaces compartidos de Google Drive en una URL de visualización directa.
-    const driveMatch=raw.match(/drive\\.google\\.com\\/(?:file\\/d\\/|open\\?id=|uc\\?.*?id=)([a-zA-Z0-9_-]+)/i);
-    if(driveMatch)return "https://drive.google.com/uc?export=view&id="+driveMatch[1];
-    if(/^https?:\\/\\//i.test(raw))return raw;
+    const lower=raw.toLowerCase();
+    // Enlaces compartidos de Google Drive: convertirlos a visualización directa.
+    let driveId="";
+    const fileMarker="drive.google.com/file/d/";
+    const filePos=lower.indexOf(fileMarker);
+    if(filePos>=0)driveId=raw.slice(filePos+fileMarker.length).split(/[/?#]/)[0];
+    if(!driveId&&lower.includes("drive.google.com")&&lower.includes("id=")){
+      driveId=raw.slice(lower.indexOf("id=")+3).split(/[&#]/)[0];
+    }
+    if(driveId)return "https://drive.google.com/uc?export=view&id="+driveId;
+    if(lower.startsWith("https://")||lower.startsWith("http://"))return raw;
     return new URL(raw,document.baseURI).href;
   }
   function coverFor(track){
