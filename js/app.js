@@ -114,8 +114,8 @@
     els.videoCaption.textContent=t.titulo||"Tu música, con estilo.";
     setAccent(t);
     [...els.playlist.children].forEach((el,i)=>el.classList.toggle("active",i===current));
-    if(playing){stopVideo();showVideo(t);}
-    els.status.textContent=(t.video||t.video_url||t.youtube_url||t.youtube)?"Video listo: pulsa reproducir para verlo.":"Añade el enlace del video en la columna video.";
+    // La sincronización de Google Sheets actualiza la interfaz, pero nunca reinicia un video activo.
+    els.status.textContent=(t.video||t.video_url||t.youtube_url||t.youtube)?(playing?"Reproduciendo…":"Video listo: pulsa reproducir para verlo."):"Añade el enlace del video en la columna video.";
   }
   function showVideo(t){
     // La columna "video" acepta: URL de YouTube, enlace directo a MP4 o ruta local como videos/cancion-001.mp4.
@@ -200,7 +200,7 @@
       const artist=document.createElement("small");artist.textContent=t.artista||"Artista desconocido";
       const icon=document.createElement("span");icon.className="play-small";icon.textContent="▶";
       meta.append(title,artist);button.append(img,meta,icon);
-      button.addEventListener("click",()=>{current=i;renderTrack();if(!playing)play();});
+      button.addEventListener("click",()=>{current=i;renderTrack();if(playing){stopVideo();showVideo(tracks[current]);}else play();});
       els.playlist.append(button);
     });
     els.trackCount.textContent=tracks.length+" canción"+(tracks.length===1?"":"es");
@@ -234,7 +234,7 @@
     }
   }
   els.play.addEventListener("click",play);
-  els.next.addEventListener("click",()=>{current=(current+1)%tracks.length;renderTrack();});
+  els.next.addEventListener("click",()=>{current=(current+1)%tracks.length;renderTrack();if(playing){stopVideo();showVideo(tracks[current]);}});
   if(els.brandEmoji)els.brandEmoji.textContent=CONFIG.HEADER_EMOJI;
   buildPlaylist();renderTrack();loadSheet();
   window.setInterval(loadSheet,CONFIG.REFRESH_MS);
