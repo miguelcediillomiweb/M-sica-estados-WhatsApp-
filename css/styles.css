@@ -36,3 +36,45 @@ body.immersive-video .stage.is-playing .sleeve{animation:sleeveGlow 3.7s ease-in
 @keyframes recordFloat{0%,100%{transform:translateX(48%) translateY(0) scale(.92)}35%{transform:translateX(51%) translateY(-7px) scale(.98)}72%{transform:translateX(45%) translateY(2px) scale(.9)}}
 @keyframes sleeveGlow{0%,100%{box-shadow:0 8px 24px #000b;filter:brightness(1)}50%{box-shadow:0 10px 32px color-mix(in srgb,var(--accent) 40%,#000);filter:brightness(1.1)}}
 @media(prefers-reduced-motion:reduce){.cover-screen,.track-item img,body.immersive-video .stage.is-playing .sleeve-wrap,body.immersive-video .stage.is-playing .record-wrap,body.immersive-video .stage.is-playing .sleeve{animation:none!important}}
+
+/* Ajuste de tamaño: la portada y el vinilo deben distinguirse claramente en el modo inmersivo. */
+body.immersive-video .player-card{
+  width:clamp(230px,29vw,340px);
+  border-radius:20px;
+  padding:5px;
+  box-shadow:0 12px 38px #000b,0 0 22px color-mix(in srgb,var(--accent) 22%,transparent);
+}
+body.immersive-video .stage{
+  aspect-ratio:1.48;
+  overflow:visible;
+}
+body.immersive-video .sleeve-wrap,
+body.immersive-video .record-wrap{
+  width:48%;
+}
+body.immersive-video .stage.is-playing .sleeve-wrap{
+  transform:translateX(-29%) scale(.96);
+}
+body.immersive-video .stage.is-playing .record-wrap{
+  transform:translateX(43%) scale(.96);
+}
+@keyframes sleeveBounce{
+  0%,100%{transform:translateX(-29%) translateY(0) scale(.96)}
+  28%{transform:translateX(-29%) translateY(-6px) scale(1)}
+  63%{transform:translateX(-26%) translateY(2px) scale(.94)}
+}
+@keyframes recordFloat{
+  0%,100%{transform:translateX(43%) translateY(0) scale(.96)}
+  35%{transform:translateX(46%) translateY(-8px) scale(1)}
+  72%{transform:translateX(40%) translateY(2px) scale(.93)}
+}
+@media(max-width:600px){
+  body.immersive-video .player-card{
+    width:clamp(220px,62vw,270px);
+    left:12px;
+    bottom:12px;
+  }
+  body.immersive-video .stage{aspect-ratio:1.48}
+  body.immersive-video .sleeve-wrap,
+  body.immersive-video .record-wrap{width:48%}
+}
