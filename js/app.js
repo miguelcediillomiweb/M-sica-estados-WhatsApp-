@@ -11,7 +11,7 @@
   };
   const $ = id => document.getElementById(id);
   const els = {
-    stage:$("stage"), sleeveWrap:$("sleeveWrap"), coverArt:$("coverArt"), recordArt:$("recordArt"),
+    stage:$("stage"), sleeveWrap:$("sleeveWrap"), coverArt:$("coverArt"), recordArt:$("recordArt"), brandEmoji:$("brandEmoji"),
     title:$("songTitle"), artist:$("songArtist"), play:$("playBtn"), playIcon:$("playIcon"),
     playText:$("playText"), next:$("nextBtn"), status:$("statusText"), videoCard:$("videoCard"),
     videoFrame:$("videoFrame"), videoCaption:$("videoCaption"), playlist:$("playlist"),
@@ -235,6 +235,7 @@
   }
   els.play.addEventListener("click",play);
   els.next.addEventListener("click",()=>{current=(current+1)%tracks.length;renderTrack();});
+  if(els.brandEmoji)els.brandEmoji.textContent=CONFIG.HEADER_EMOJI;
   buildPlaylist();renderTrack();loadSheet();
   window.setInterval(loadSheet,CONFIG.REFRESH_MS);
 })();
