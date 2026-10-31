@@ -64,36 +64,41 @@
     setAccent(t);
     [...els.playlist.children].forEach((el,i)=>el.classList.toggle("active",i===current));
     if(playing){stopVideo();showVideo(t);}
-    els.status.textContent=t.video?"Video local listo para reproducirse.":(t.youtube_url||t.youtube?"Se usará YouTube como alternativa.":"Añade una ruta de video en la columna video.");
+    els.status.textContent=(t.video||t.video_url||t.youtube_url||t.youtube)?"Video listo: pulsa reproducir para verlo.":"Añade el enlace del video en la columna video.";
   }
   function showVideo(t){
-    // Los archivos MP4 alojados en el repositorio tienen prioridad; YouTube queda como respaldo opcional.
-    const localPath=String(t.video||"").trim();
-    if(localPath){
-      const video=document.createElement("video");
-      video.title="Video de "+(t.titulo||"la canción");
-      video.src=new URL(localPath,document.baseURI).href;
-      video.controls=true;
-      video.autoplay=true;
-      video.playsInline=true;
-      video.preload="metadata";
-      video.setAttribute("playsinline","");
-      video.addEventListener("error",()=>{els.status.textContent="No se pudo cargar el archivo de video. Comprueba la ruta y el nombre en la columna video.";});
-      els.videoFrame.replaceChildren(video);
-      const promise=video.play();
-      if(promise&&typeof promise.catch==="function")promise.catch(()=>{els.status.textContent="Toca reproducir en el video para iniciar la reproducción.";});
-      else els.status.textContent="Video local en reproducción.";
+    // La columna "video" acepta: URL de YouTube, enlace directo a MP4 o ruta local como videos/cancion-001.mp4.
+    const videoValue=String(t.video||t.video_url||t.youtube_url||t.youtube||"").trim();
+    if(!videoValue){els.status.textContent="Añade el enlace del video en la columna video de Google Sheets.";return;}
+    const ytId=videoId(videoValue);
+    if(ytId){
+      const iframe=document.createElement("iframe");
+      iframe.title="Video de "+(t.titulo||"la canción");
+      iframe.src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(ytId)+"?autoplay=1&rel=0&playsinline=1";
+      iframe.allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+      iframe.allowFullscreen=true;iframe.referrerPolicy="strict-origin-when-cross-origin";
+      els.videoFrame.replaceChildren(iframe);
+      els.status.textContent="Video de YouTube cargado.";
       return;
     }
-    const id=videoId(t.youtube_url||t.youtube);
-    if(!id){els.status.textContent="Añade la ruta de un MP4 en la columna video de Google Sheets.";return;}
-    const iframe=document.createElement("iframe");
-    iframe.title="Video de "+(t.titulo||"la canción");
-    iframe.src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(id)+"?autoplay=1&rel=0&playsinline=1";
-    iframe.allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-    iframe.allowFullscreen=true;iframe.referrerPolicy="strict-origin-when-cross-origin";
-    els.videoFrame.replaceChildren(iframe);
-    els.status.textContent="Reproduciendo video de respaldo de YouTube.";
+    let mediaUrl=videoValue;
+    // Admite enlaces compartidos de Google Drive, aunque la reproducción depende de sus permisos.
+    const driveMatch=videoValue.match(/drive\\.google\\.com\\/file\\/d\\/([^/?]+)/i);
+    if(driveMatch) mediaUrl="https://drive.google.com/uc?export=download&id="+driveMatch[1];
+    else if(!/^https?:\\/\\//i.test(mediaUrl)) mediaUrl=new URL(mediaUrl,document.baseURI).href;
+    const video=document.createElement("video");
+    video.title="Video de "+(t.titulo||"la canción");
+    video.src=mediaUrl;
+    video.controls=true;
+    video.autoplay=true;
+    video.playsInline=true;
+    video.preload="metadata";
+    video.setAttribute("playsinline","");
+    video.addEventListener("error",()=>{els.status.textContent="No se pudo reproducir el enlace. Para evitar bloqueos, usa un MP4 directo o sube el archivo a la carpeta videos/ del repositorio.";});
+    els.videoFrame.replaceChildren(video);
+    const promise=video.play();
+    if(promise&&typeof promise.catch==="function")promise.catch(()=>{els.status.textContent="El video está cargado; toca ▶ dentro del reproductor para escuchar.";});
+    else els.status.textContent="Video cargado.";
   }
   function play(){
     playing=!playing;
