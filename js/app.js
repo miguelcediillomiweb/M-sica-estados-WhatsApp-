@@ -83,9 +83,12 @@
     }
     let mediaUrl=videoValue;
     // Admite enlaces compartidos de Google Drive, aunque la reproducción depende de sus permisos.
-    const driveMatch=videoValue.match(/drive\\.google\\.com\\/file\\/d\\/([^/?]+)/i);
-    if(driveMatch) mediaUrl="https://drive.google.com/uc?export=download&id="+driveMatch[1];
-    else if(!/^https?:\\/\\//i.test(mediaUrl)) mediaUrl=new URL(mediaUrl,document.baseURI).href;
+    const driveMarker="drive.google.com/file/d/";
+    const driveIndex=videoValue.toLowerCase().indexOf(driveMarker);
+    if(driveIndex>=0){
+      const driveId=videoValue.slice(driveIndex+driveMarker.length).split(/[/?#]/)[0];
+      if(driveId) mediaUrl="https://drive.google.com/uc?export=download&id="+driveId;
+    } else if(!(mediaUrl.startsWith("https://")||mediaUrl.startsWith("http://"))) mediaUrl=new URL(mediaUrl,document.baseURI).href;
     const video=document.createElement("video");
     video.title="Video de "+(t.titulo||"la canción");
     video.src=mediaUrl;
