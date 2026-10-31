@@ -1,3 +1,3 @@
-id,titulo,artista,portada,youtube_url,activa,orden
-001,Una canción para ti,Artista invitado,../img/canciones/portada-demo.svg,,SI,1
-002,Mi siguiente canción,Otro artista,../img/canciones/portada-demo.svg,https://www.youtube.com/watch?v=VIDEO_ID,NO,2
+id,titulo,artista,portada,video,youtube_url,activa,orden
+001,Una canción para ti,Artista invitado,img/canciones/portada-demo.svg,videos/cancion-001.mp4,,SI,1
+002,Mi siguiente canción,Otro artista,img/canciones/portada-demo.svg,videos/cancion-002.mp4,,NO,2
