@@ -162,6 +162,15 @@
     video.preload="metadata";
     video.setAttribute("playsinline","");
     video.addEventListener("error",()=>{exitImmersive(false);els.status.textContent="No se pudo reproducir el enlace. Para evitar bloqueos, usa un MP4 directo o sube el archivo a la carpeta videos/ del repositorio.";});
+    // Dos segundos antes del final, salir del modo inmersivo y volver a la portada/vinilo.
+    video.addEventListener("timeupdate",()=>{
+      if(Number.isFinite(video.duration) && video.duration > 0 && video.duration-video.currentTime <= 2){
+        if(document.body.classList.contains("immersive-video")){
+          exitImmersive(true);
+          els.status.textContent="El video está por terminar…";
+        }
+      }
+    });
     video.addEventListener("ended",()=>{exitImmersive(true);playing=false;els.stage.classList.remove("is-playing");els.videoCard.classList.remove("is-playing");document.body.classList.remove("is-playing");els.playIcon.textContent="▶";els.playText.textContent="Reproducir experiencia";stopVideo();els.status.textContent="Video terminado. De vuelta al vinilo.";});
     els.videoFrame.replaceChildren(video);
     immersiveTimer=window.setTimeout(enterImmersive,3000);
