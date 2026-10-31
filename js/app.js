@@ -15,7 +15,7 @@
     videoFrame:$("videoFrame"), videoCaption:$("videoCaption"), playlist:$("playlist"),
     trackCount:$("trackCount"), updatedAt:$("updatedAt")
   };
-  const demo = [{id:"demo",titulo:"Una canción para ti",artista:"Artista invitado",portada:CONFIG.DEMO_COVER,youtube_url:"",activa:"SI",orden:"1"}];
+  const demo = [{id:"demo",titulo:"Una canción para ti",artista:"Artista invitado",portada:CONFIG.DEMO_COVER,video:"",youtube_url:"",activa:"SI",orden:"1"}];
   let tracks = [...demo], current = 0, playing = false, loadedFromSheet = false;
   const accents = ["#b88cff","#ff7aa8","#5adbd0","#ffb86b","#7ca7ff","#f5e76e"];
   function csvRows(text) {
@@ -47,6 +47,8 @@
     document.documentElement.style.setProperty("--cover-image", 'url("' + absoluteCover + '")');
   }
   function stopVideo(){
+    const video=els.videoFrame.querySelector("video");
+    if(video){try{video.pause();video.removeAttribute("src");video.load();}catch{}}
     const frame=els.videoFrame.querySelector("iframe");
     if(frame){try{frame.src="about:blank";}catch{}}
     els.videoFrame.innerHTML='<div class="video-placeholder"><span>♪</span><p>El video aparecerá aquí</p><small>Presiona reproducir para comenzar</small></div>';
@@ -62,18 +64,36 @@
     setAccent(t);
     [...els.playlist.children].forEach((el,i)=>el.classList.toggle("active",i===current));
     if(playing){stopVideo();showVideo(t);}
-    els.status.textContent=t.youtube_url||t.youtube||t.video?"Video listo para reproducirse.":"Esta canción aún no tiene enlace de YouTube.";
+    els.status.textContent=t.video?"Video local listo para reproducirse.":(t.youtube_url||t.youtube?"Se usará YouTube como alternativa.":"Añade una ruta de video en la columna video.");
   }
   function showVideo(t){
-    const id=videoId(t.youtube_url||t.youtube||t.video);
-    if(!id){els.status.textContent="Añade un enlace de YouTube a esta canción en la hoja.";return;}
+    // Los archivos MP4 alojados en el repositorio tienen prioridad; YouTube queda como respaldo opcional.
+    const localPath=String(t.video||"").trim();
+    if(localPath){
+      const video=document.createElement("video");
+      video.title="Video de "+(t.titulo||"la canción");
+      video.src=new URL(localPath,document.baseURI).href;
+      video.controls=true;
+      video.autoplay=true;
+      video.playsInline=true;
+      video.preload="metadata";
+      video.setAttribute("playsinline","");
+      video.addEventListener("error",()=>{els.status.textContent="No se pudo cargar el archivo de video. Comprueba la ruta y el nombre en la columna video.";});
+      els.videoFrame.replaceChildren(video);
+      const promise=video.play();
+      if(promise&&typeof promise.catch==="function")promise.catch(()=>{els.status.textContent="Toca reproducir en el video para iniciar la reproducción.";});
+      else els.status.textContent="Video local en reproducción.";
+      return;
+    }
+    const id=videoId(t.youtube_url||t.youtube);
+    if(!id){els.status.textContent="Añade la ruta de un MP4 en la columna video de Google Sheets.";return;}
     const iframe=document.createElement("iframe");
     iframe.title="Video de "+(t.titulo||"la canción");
     iframe.src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(id)+"?autoplay=1&rel=0&playsinline=1";
     iframe.allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
     iframe.allowFullscreen=true;iframe.referrerPolicy="strict-origin-when-cross-origin";
     els.videoFrame.replaceChildren(iframe);
-    els.status.textContent="Experiencia en reproducción.";
+    els.status.textContent="Reproduciendo video de respaldo de YouTube.";
   }
   function play(){
     playing=!playing;
