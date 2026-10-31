@@ -30,7 +30,7 @@
     }
     row.push(cell.trim());if(row.some(v=>v!==""))rows.push(row);
     if(!rows.length)return [];
-    const headers=rows.shift().map(h=>h.replace(/^\uFEFF/,"").toLowerCase());
+    const headers=rows.shift().map(h=>h.replace(/^\uFEFF/,"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[ -]+/g,"_"));
     return rows.map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]||""])));
   }
   function isActive(v){return !["no","false","0","inactiva","inactivo"].includes(String(v||"si").trim().toLowerCase());}
