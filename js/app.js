@@ -44,7 +44,7 @@
     document.documentElement.style.setProperty("--accent",accents[Math.abs(hash)%accents.length]);
     document.documentElement.style.setProperty("--accent2",accents[(Math.abs(hash)+3)%accents.length]);
     const absoluteCover = new URL(s, document.baseURI).href;
-    document.documentElement.style.setProperty("--cover-image", `url("${absoluteCover.replace(/["\\]/g, "\\document.documentElement.style.setProperty("--accent2",accents[(Math.abs(hash)+3)%accents.length]);")}")`);
+    document.documentElement.style.setProperty("--cover-image", 'url("' + absoluteCover + '")');
   }
   function stopVideo(){
     const frame=els.videoFrame.querySelector("iframe");
