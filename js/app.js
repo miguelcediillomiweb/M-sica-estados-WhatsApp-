@@ -38,12 +38,38 @@
     if(!url)return "";
     try{const u=new URL(url);if(u.hostname.includes("youtu.be"))return u.pathname.slice(1).split("/")[0];if(u.searchParams.get("v"))return u.searchParams.get("v");const m=u.pathname.match(/\/(?:embed|shorts|live)\/([^/?]+)/);return m?m[1]:"";}catch{return "";}
   }
-  function coverFor(track){return track.portada||track.cover||CONFIG.DEMO_COVER;}
+  function firstValue(track, keys){
+    for(const key of keys){
+      const value=String(track[key]||"").trim();
+      if(value)return value;
+    }
+    return "";
+  }
+  function normalizeMediaUrl(value, kind="image"){
+    const raw=String(value||"").trim();
+    if(!raw)return kind==="image"?new URL(CONFIG.DEMO_COVER,document.baseURI).href:"";
+    // Convierte enlaces compartidos de Google Drive en una URL de visualización directa.
+    const driveMatch=raw.match(/drive\\.google\\.com\\/(?:file\\/d\\/|open\\?id=|uc\\?.*?id=)([a-zA-Z0-9_-]+)/i);
+    if(driveMatch)return "https://drive.google.com/uc?export=view&id="+driveMatch[1];
+    if(/^https?:\\/\\//i.test(raw))return raw;
+    return new URL(raw,document.baseURI).href;
+  }
+  function coverFor(track){
+    return normalizeMediaUrl(firstValue(track,["portada","imagen","imagen_portada","caratula","carátula","cover","cover_url","foto"]));
+  }
+  function applyCoverImage(img, value){
+    img.onerror=()=>{
+      img.onerror=null;
+      img.src=new URL(CONFIG.DEMO_COVER,document.baseURI).href;
+    };
+    img.src=normalizeMediaUrl(value,"image");
+  }
   function setAccent(track){
-    const s=coverFor(track);let hash=0;for(let i=0;i<s.length;i++)hash=(hash*31+s.charCodeAt(i))|0;
+    const s=firstValue(track,["portada","imagen","imagen_portada","caratula","carátula","cover","cover_url","foto"])||CONFIG.DEMO_COVER;
+    let hash=0;for(let i=0;i<s.length;i++)hash=(hash*31+s.charCodeAt(i))|0;
     document.documentElement.style.setProperty("--accent",accents[Math.abs(hash)%accents.length]);
     document.documentElement.style.setProperty("--accent2",accents[(Math.abs(hash)+3)%accents.length]);
-    const absoluteCover = new URL(s, document.baseURI).href;
+    const absoluteCover = normalizeMediaUrl(s,"image");
     document.documentElement.style.setProperty("--cover-image", 'url("' + absoluteCover + '")');
   }
   function stopVideo(){
@@ -55,8 +81,9 @@
   }
   function renderTrack(){
     const t=tracks[current];if(!t)return;
-    const cover=coverFor(t);
-    els.coverArt.src=cover;els.recordArt.src=cover;
+    const cover=firstValue(t,["portada","imagen","imagen_portada","caratula","carátula","cover","cover_url","foto"]);
+    applyCoverImage(els.coverArt,cover);
+    applyCoverImage(els.recordArt,cover);
     els.coverArt.alt="Portada de "+(t.titulo||"la canción");
     els.title.textContent=t.titulo||"Canción sin título";
     els.artist.textContent=t.artista||"Artista desconocido";
@@ -117,7 +144,7 @@
     els.playlist.replaceChildren();
     tracks.forEach((t,i)=>{
       const button=document.createElement("button");button.type="button";button.className="track-item"+(i===current?" active":"");
-      const img=document.createElement("img");img.src=coverFor(t);img.alt="";img.loading="lazy";
+      const img=document.createElement("img");img.alt="";img.loading="lazy";applyCoverImage(img,firstValue(t,["portada","imagen","imagen_portada","caratula","carátula","cover","cover_url","foto"]));
       const meta=document.createElement("span");meta.className="meta";
       const title=document.createElement("strong");title.textContent=t.titulo||"Canción sin título";
       const artist=document.createElement("small");artist.textContent=t.artista||"Artista desconocido";
@@ -135,7 +162,16 @@
       if(!response.ok)throw new Error("HTTP "+response.status);
       const text=await response.text();
       if(!text||text.trim().startsWith("<!DOCTYPE")||text.trim().startsWith("<html"))throw new Error("La hoja no está publicada como CSV o requiere acceso.");
-      const rows=csvRows(text).filter(r=>isActive(r.activa));
+      const rows=csvRows(text).map(r=>{
+        const normalized={...r};
+        normalized.titulo=firstValue(r,["titulo","cancion","canción","nombre","nombre_de_cancion","nombre_de_la_cancion"])||"Canción sin título";
+        normalized.artista=firstValue(r,["artista","interprete","intérprete","cantante"])||"Artista desconocido";
+        normalized.portada=firstValue(r,["portada","imagen","imagen_portada","caratula","carátula","cover","cover_url","foto"]);
+        normalized.video=firstValue(r,["video","video_url","enlace_video","link_video","youtube_url","youtube","enlace_youtube"]);
+        normalized.activa=firstValue(r,["activa","activo","estado"])||"SI";
+        normalized.orden=firstValue(r,["orden","posicion","posición"])||"9999";
+        return normalized;
+      }).filter(r=>isActive(r.activa));
       if(!rows.length)throw new Error("No hay canciones activas en la hoja.");
       rows.sort((a,b)=>(Number(a.orden)||9999)-(Number(b.orden)||9999));
       tracks=rows;loadedFromSheet=true;
