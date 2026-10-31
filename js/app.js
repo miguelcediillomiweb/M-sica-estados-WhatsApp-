@@ -59,7 +59,9 @@
     }
     if(driveId)return "https://drive.google.com/uc?export=view&id="+driveId;
     if(lower.startsWith("https://")||lower.startsWith("http://"))return raw;
-    return new URL(raw,document.baseURI).href;
+    // Si Sheets solo contiene el nombre del archivo, usar la carpeta estándar del proyecto.
+    const relative = (!raw.includes("/") && !raw.includes("\\")) ? (kind==="image"?"img/canciones/":"videos/")+raw : raw;
+    return new URL(relative,document.baseURI).href;
   }
   function coverFor(track){
     return normalizeMediaUrl(firstValue(track,["portada","imagen","imagen_portada","caratula","carátula","cover","cover_url","foto"]));
@@ -122,7 +124,11 @@
     if(driveIndex>=0){
       const driveId=videoValue.slice(driveIndex+driveMarker.length).split(/[/?#]/)[0];
       if(driveId) mediaUrl="https://drive.google.com/uc?export=download&id="+driveId;
-    } else if(!(mediaUrl.startsWith("https://")||mediaUrl.startsWith("http://"))) mediaUrl=new URL(mediaUrl,document.baseURI).href;
+    } else if(!(mediaUrl.startsWith("https://")||mediaUrl.startsWith("http://"))){
+      // En la hoja basta con escribir mental.mp4; el archivo vive en videos/.
+      if(!mediaUrl.includes("/") && !mediaUrl.includes("\\")) mediaUrl="videos/"+mediaUrl;
+      mediaUrl=new URL(mediaUrl,document.baseURI).href;
+    }
     const video=document.createElement("video");
     video.title="Video de "+(t.titulo||"la canción");
     video.src=mediaUrl;
