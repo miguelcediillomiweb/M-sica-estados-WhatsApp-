@@ -5,16 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#090911">
   <meta name="description" content="Escucha y descubre música para tus estados de WhatsApp.">
-  <title>Música Vinilo</title>
-  <link rel="stylesheet" href="css/styles.css?v=20261031-9">
-  <script src="js/app.js?v=20261031-9" defer></script>
+  <title>Música</title>
+  <link rel="stylesheet" href="css/styles.css?v=20261031-10">
+  <script src="js/app.js?v=20261031-10" defer></script>
 </head>
 <body>
   <div class="ambient" aria-hidden="true"><div class="ambient-glow"></div></div>
-  <header class="topbar"><span class="brand-mark">◉</span><span>MÚSICA <b>VINILO</b></span><span class="live-dot">EXPERIENCIA MUSICAL</span></header>
+  <header class="topbar" aria-label="Música">
+    <div class="brand"><span class="brand-mark">◉</span><span class="brand-name">MÚSICA</span><span class="brand-emoji" id="brandEmoji" aria-label="Emoji de temporada">🎃</span></div>
+    <span class="byline">by c.e.d.i.l.l.o.</span>
+  </header>
   <main class="layout">
     <section class="player-card" aria-label="Reproductor de música">
-      <div class="eyebrow">TU CANCIÓN · TU MOMENTO</div>
       <div class="stage" id="stage">
         <div class="sleeve-wrap" id="sleeveWrap">
           <div class="sleeve" id="sleeve"><img id="coverArt" src="img/canciones/portada-demo.svg" alt="Portada del álbum"><div class="sleeve-shine"></div></div>
@@ -32,6 +34,5 @@
     </section>
   </main>
   <section class="playlist-section"><div class="section-title"><span>SELECCIÓN MUSICAL</span><small id="trackCount">Cargando canciones…</small></div><div id="playlist" class="playlist"><p class="empty-list">Preparando tu selección…</p></div></section>
-  <footer>Diseñado para disfrutar música con estilo · <span id="updatedAt">Modo demostración</span></footer>
 </body>
 </html>
