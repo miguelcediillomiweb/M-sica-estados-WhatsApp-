@@ -18,3 +18,21 @@ body.immersive-video .stage.is-playing .sleeve-wrap{transform:translateX(-32%) s
 body.immersive-video .stage.is-playing .record-wrap{transform:translateX(48%) scale(.92);opacity:1}
 body.immersive-video .sleeve{box-shadow:0 8px 24px #000b}
 @media(max-width:600px){body.immersive-video .player-card{width:clamp(142px,44vw,190px);left:10px;bottom:10px}body.immersive-video .stage{aspect-ratio:1.8}}
+
+/* Portada como visualizador cuando la canción no tiene video. */
+.cover-screen{display:block;width:100%;height:100%;min-height:0;object-fit:cover;object-position:center;background:#050509;animation:coverDrift 18s ease-in-out infinite alternate}
+body.immersive-video .video-frame .cover-screen{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.08);transform:scale(1.02)}
+@keyframes coverDrift{0%{transform:scale(1.02) translate3d(-.5%,0,0)}100%{transform:scale(1.12) translate3d(.8%,.4%,0)}}
+/* Movimiento suave y desfasado para que las portadas de la selección tengan vida. */
+.track-item img{animation:thumbnailFloat 3.8s ease-in-out infinite}
+.track-item:nth-child(3n) img{animation-duration:4.6s;animation-delay:-1.3s}
+.track-item:nth-child(3n + 1) img{animation-duration:3.3s;animation-delay:-.7s}
+@keyframes thumbnailFloat{0%,100%{transform:translateY(0) scale(1);filter:brightness(1)}45%{transform:translateY(-3px) scale(1.045);filter:brightness(1.12)}70%{transform:translateY(1px) scale(.99)}}
+/* En modo inmersivo, la portada y el vinilo flotan con ritmos distintos. */
+body.immersive-video .stage.is-playing .sleeve-wrap{animation:sleeveBounce 4.1s ease-in-out infinite}
+body.immersive-video .stage.is-playing .record-wrap{animation:recordFloat 3.3s ease-in-out infinite}
+body.immersive-video .stage.is-playing .sleeve{animation:sleeveGlow 3.7s ease-in-out infinite}
+@keyframes sleeveBounce{0%,100%{transform:translateX(-32%) translateY(0) scale(.92)}28%{transform:translateX(-32%) translateY(-5px) scale(.96)}63%{transform:translateX(-29%) translateY(2px) scale(.9)}}
+@keyframes recordFloat{0%,100%{transform:translateX(48%) translateY(0) scale(.92)}35%{transform:translateX(51%) translateY(-7px) scale(.98)}72%{transform:translateX(45%) translateY(2px) scale(.9)}}
+@keyframes sleeveGlow{0%,100%{box-shadow:0 8px 24px #000b;filter:brightness(1)}50%{box-shadow:0 10px 32px color-mix(in srgb,var(--accent) 40%,#000);filter:brightness(1.1)}}
+@media(prefers-reduced-motion:reduce){.cover-screen,.track-item img,body.immersive-video .stage.is-playing .sleeve-wrap,body.immersive-video .stage.is-playing .record-wrap,body.immersive-video .stage.is-playing .sleeve{animation:none!important}}
