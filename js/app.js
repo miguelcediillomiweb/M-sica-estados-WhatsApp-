@@ -118,7 +118,17 @@
   function showVideo(t){
     // La columna "video" acepta: URL de YouTube, enlace directo a MP4 o ruta local como videos/cancion-001.mp4.
     const videoValue=String(t.video||t.video_url||t.youtube_url||t.youtube||"").trim();
-    if(!videoValue){els.status.textContent="Añade el enlace del video en la columna video de Google Sheets.";return;}
+    if(!videoValue){
+      // Si no hay video, la portada ocupa la pantalla como visualizador alternativo.
+      const cover=document.createElement("img");
+      cover.className="cover-screen";
+      cover.alt="Portada de "+(t.titulo||"la canción");
+      cover.src=coverFor(t);
+      els.videoFrame.replaceChildren(cover);
+      immersiveTimer=window.setTimeout(enterImmersive,3000);
+      els.status.textContent="Esta canción no tiene video: mostrando su portada.";
+      return;
+    }
     const ytId=videoId(videoValue);
     if(ytId){
       const iframe=document.createElement("iframe");
