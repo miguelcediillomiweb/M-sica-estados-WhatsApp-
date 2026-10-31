@@ -78,3 +78,12 @@ body.immersive-video .stage.is-playing .record-wrap{
   body.immersive-video .sleeve-wrap,
   body.immersive-video .record-wrap{width:48%}
 }
+
+/* Encabezado limpio: título a la izquierda y firma pegada al extremo derecho. */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;letter-spacing:0}
+.brand{display:flex;align-items:center;gap:9px;min-width:0;font:700 13px 'Space Grotesk',sans-serif;letter-spacing:2px}
+.brand-mark{font-size:25px;color:var(--accent);line-height:1}
+.brand-name{color:var(--text)}
+.brand-emoji{font-size:19px;line-height:1}
+.byline{margin-left:auto;text-align:right;white-space:nowrap;color:#c5bfd6;font:600 10px 'Space Grotesk',sans-serif;letter-spacing:1.2px}
+@media(max-width:420px){.topbar{padding:0 14px}.brand{gap:7px;font-size:12px}.byline{font-size:9px;letter-spacing:.7px}}
